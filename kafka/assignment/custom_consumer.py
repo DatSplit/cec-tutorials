@@ -55,6 +55,12 @@ def create_consumer():
         'ssl.endpoint.identification.algorithm': 'none',
     })
 
+def headers_to_dict(headers):
+    """ Convert Kafka message headers to a dictionary. """
+    if not headers:
+        return {}
+    return {key: value.decode('utf-8') for key, value in headers}
+
 @click.command()
 @click.argument('topic')
 def consume(topic: str): 
