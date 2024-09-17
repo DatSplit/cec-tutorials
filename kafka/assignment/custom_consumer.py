@@ -4,7 +4,7 @@ import random
 import avro.io
 import io
 from confluent_kafka import Consumer
-from avro.schema import Parse
+from avro.schema import parse
 experiment_started_schema = {
   "type": "record",
   "name": "experiment_started",
@@ -15,7 +15,7 @@ experiment_started_schema = {
 }
 
 
-experiment_config_schema = Parse('''
+experiment_config_schema = parse('''
 {
     "type": "record",
     "name": "ExperimentConfig",
@@ -35,7 +35,7 @@ experiment_config_schema = Parse('''
 }
 ''')
 
-stabilization_started_schema = Parse('''
+stabilization_started_schema = parse('''
 {
     "type": "record",
     "name": "stabilization_started",
@@ -46,7 +46,7 @@ stabilization_started_schema = Parse('''
 }
 ''')
 
-sensor_temperature_measured_schema = Parse('''
+sensor_temperature_measured_schema = parse('''
 {
     "type": "record",
     "name": "sensor_temperature_measured",
@@ -61,7 +61,7 @@ sensor_temperature_measured_schema = Parse('''
 }
 ''')
 
-experiment_terminated_schema = Parse('''
+experiment_terminated_schema = parse('''
 {
     "type": "record",
     "name": "experiment_terminated",
