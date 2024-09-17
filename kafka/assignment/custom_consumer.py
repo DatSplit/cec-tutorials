@@ -1,8 +1,76 @@
 import signal
 import click 
 import random
-
+import avro.io
+import io
 from confluent_kafka import Consumer
+from avro.schema import Parse
+experiment_started_schema = {
+  "type": "record",
+  "name": "experiment_started",
+  "fields": [
+    {"name": "experiment", "type": "string"},
+    {"name": "timestamp", "type": "double"}
+  ]
+}
+
+
+experiment_config_schema = Parse('''
+{
+    "type": "record",
+    "name": "ExperimentConfig",
+    "fields": [
+        {"name": "experiment", "type": "string"},
+        {"name": "researcher", "type": "string"},
+        {"name": "sensors", "type": {"type": "array", "items": "string"}},
+        {"name": "temperature_range", "type": {
+            "type": "record",
+            "name": "temperature_range",
+            "fields": [
+                {"name": "upper_threshold", "type": "float"},
+                {"name": "lower_threshold", "type": "float"}
+            ]
+        }}
+    ]
+}
+''')
+
+stabilization_started_schema = Parse('''
+{
+    "type": "record",
+    "name": "stabilization_started",
+    "fields": [
+        {"name": "experiment", "type": "string"},
+        {"name": "timestamp", "type": "double"}
+    ]
+}
+''')
+
+sensor_temperature_measured_schema = Parse('''
+{
+    "type": "record",
+    "name": "sensor_temperature_measured",
+    "fields": [
+        {"name": "experiment", "type": "string"},
+        {"name": "sensor", "type": "string"},
+        {"name": "measurement_id", "type": "string"},
+        {"name": "timestamp", "type": "double"},
+        {"name": "temperature", "type": "float"},
+        {"name": "measurement_hash", "type": "string"}
+    ]
+}
+''')
+
+experiment_terminated_schema = Parse('''
+{
+    "type": "record",
+    "name": "experiment_terminated",
+    "fields": [
+        {"name": "experiment", "type": "string"},
+        {"name": "timestamp", "type": "double"}
+    ]
+}
+''')
 
 
 def signal_handler(sig, frame):
@@ -24,6 +92,14 @@ c = Consumer({
 })
 print("Consumer created")
 
+def avro_deserializer(schema, data):
+    if not data:
+        return None
+    bytes_reader = io.BytesIO(data)
+    decoder = avro.io.BinaryDecoder(bytes_reader)
+    reader = avro.io.DatumReader(schema)
+    return reader.read(decoder)
+
 @click.command()
 @click.argument('topic')
 def consume(topic: str): 
@@ -43,7 +119,16 @@ def consume(topic: str):
         num_events += 1
         if num_events % 1000 == 0:
             print(num_events)
-        print(msg.headers())
-        #print(msg.value())
+        record_name = msg.headers()[0][1].decode('utf-8')
+        print(record_name)
+        if record_name == 'sensor_temperature_measured':
+            deserialized_msg = avro_deserializer(sensor_temperature_measured_schema, msg.value())
+        elif record_name == 'experiment_terminated':
+            deserialized_msg = avro_deserializer(experiment_terminated_schema, msg.value())
+        elif record_name == 'experiment_started':
+            deserialized_msg = avro_deserializer(experiment_started_schema, msg.value())
+        elif record_name == 'stabilization_started':
+            deserialized_msg = avro_deserializer(stabilization_started_schema, msg.value())
+        print(deserialized_msg)
 
 consume()
