@@ -54,9 +54,11 @@ if ! [[ -d "$auth" ]]; then
     echo "'$auth' is not a directory. It should be a credentials directory"
     exit 1
 fi
-
-docker run \
-    --rm \
-    -v "$(realpath $auth)":/app/experiment-producer/auth \
-    dclandau/cec-experiment-producer \
-    --topic "$topic" --brokers "$brokers" "$@"
+for i in {1..3}; do
+    docker run \
+        --rm \
+        --name experiment-producer-$i \
+        -v "$(realpath $auth)":/app/experiment-producer/auth \
+        dclandau/cec-experiment-producer \
+        --topic "$topic" --brokers "$brokers" "$@"
+done

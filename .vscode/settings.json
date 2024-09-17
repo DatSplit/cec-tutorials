@@ -1,0 +1,6 @@
+{
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.pythonPath": "C:\\Users\\Niels Teunissen\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "pylint.importStrategy": "fromEnvironment"
+
+}
