@@ -111,7 +111,7 @@ def avro_deserializer(schema, data):
     bytes_reader = io.BytesIO(data)
     decoder = avro.io.BinaryDecoder(bytes_reader)
     reader = avro.io.DatumReader(schema)
-    return reader.read(decoder)
+    return reader.read(decoder, 'rb')
 
 @click.command()
 @click.argument('topic')
