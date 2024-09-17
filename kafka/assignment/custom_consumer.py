@@ -43,6 +43,7 @@ def consume(topic: str):
         num_events += 1
         if num_events % 1000 == 0:
             print(num_events)
+        print(msg.key())
         print(msg.value())
 
 consume()
