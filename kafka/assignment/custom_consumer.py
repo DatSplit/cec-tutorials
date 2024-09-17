@@ -15,25 +15,38 @@ experiment_started_schema = {
 }
 
 
-experiment_config_schema = parse('''
-{
-    "type": "record",
-    "name": "ExperimentConfig",
+experiment_config_schema = {
+    "type": "record", 
+    "name": "ExperimentConfig", 
     "fields": [
-        {"name": "experiment", "type": "string"},
-        {"name": "researcher", "type": "string"},
-        {"name": "sensors", "type": {"type": "array", "items": "string"}},
-        {"name": "temperature_range", "type": {
-            "type": "record",
+        {
+            "type": "string",
+            "name": "experiment"
+        },
+        {
+            "type": "string",
+            "name": "researcher"
+        },
+        {
+            "name": "sensors", 
+            "type": {
+                "type": "array",
+                "items": "string"
+            }
+        }, 
+        {
             "name": "temperature_range",
-            "fields": [
-                {"name": "upper_threshold", "type": "float"},
-                {"name": "lower_threshold", "type": "float"}
-            ]
-        }}
+            "type": {
+                "type": "record",
+                "name": "temperature_range",
+                "fields": [
+                    {"name": "upper_threshold", "type": "float"},
+                    {"name": "lower_threshold", "type": "float"}
+                ]
+            } 
+        }
     ]
 }
-''')
 
 stabilization_started_schema = parse('''
 {
