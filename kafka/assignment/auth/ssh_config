@@ -1,0 +1,5 @@
+Host CloudCourse_VM_39
+  HostName 18.201.10.203
+  User ubuntu
+  Port 22
+  IdentityFile ~/.ssh/ssh_key_39
