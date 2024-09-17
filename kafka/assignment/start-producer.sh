@@ -60,5 +60,4 @@ for i in {1..3}; do
         -v "$(realpath $auth)":/app/experiment-producer/auth \
         dclandau/cec-experiment-producer \
         --topic "$topic" --brokers "$brokers" "$@"
-    docker logs -f experiment-producer-$i
 done
