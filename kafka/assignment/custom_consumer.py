@@ -5,6 +5,10 @@ import avro.io
 import io
 from confluent_kafka import Consumer
 from avro.schema import parse
+from confluent_kafka import Deserializer
+from io import BytesIO
+from avro.io import DatumReader, BinaryDecoder
+import avro.schema
 experiment_started_schema = {
   "type": "record",
   "name": "experiment_started",
@@ -15,7 +19,7 @@ experiment_started_schema = {
 }
 
 
-experiment_config_schema = parse('''{
+experiment_config_schema = parse("""{
     "type": "record", 
     "name": "ExperimentConfig", 
     "fields": [
@@ -46,7 +50,7 @@ experiment_config_schema = parse('''{
             } 
         }
     ]
-}''')
+}""")
 
 stabilization_started_schema = parse('''
 {
@@ -105,13 +109,11 @@ c = Consumer({
 })
 print("Consumer created")
 
-def avro_deserializer(schema, data):
-    if not data:
-        return None
-    bytes_reader = io.BytesIO(data)
-    decoder = avro.io.BinaryDecoder(bytes_reader)
-    reader = avro.io.DatumReader(schema)
-    return reader.read(decoder, 'rb')
+def decode_avro_message(message, schema):
+    bytes_reader = BytesIO(message)
+    decoder = BinaryDecoder(bytes_reader)
+    reader = DatumReader(schema)
+    return reader.read(decoder)
 
 @click.command()
 @click.argument('topic')
@@ -135,15 +137,15 @@ def consume(topic: str):
         record_name = msg.headers()[0][1].decode('utf-8')
         print(record_name)
         if record_name == 'sensor_temperature_measured':
-            deserialized_msg = avro_deserializer(sensor_temperature_measured_schema, msg.value())
+            deserialized_msg = decode_avro_message(sensor_temperature_measured_schema, msg.value())
         elif record_name == 'experiment_configured':
-            deserialized_msg = avro_deserializer(experiment_config_schema, msg.value())
+            deserialized_msg = decode_avro_message(experiment_config_schema, msg.value())
         elif record_name == 'experiment_terminated':
-            deserialized_msg = avro_deserializer(experiment_terminated_schema, msg.value())
+            deserialized_msg = decode_avro_message(experiment_terminated_schema, msg.value())
         elif record_name == 'experiment_started':
-            deserialized_msg = avro_deserializer(experiment_started_schema, msg.value())
+            deserialized_msg = decode_avro_message(experiment_started_schema, msg.value())
         elif record_name == 'stabilization_started':
-            deserialized_msg = avro_deserializer(stabilization_started_schema, msg.value())
+            deserialized_msg = decode_avro_message(stabilization_started_schema, msg.value())
         print(deserialized_msg)
 
 consume()
