@@ -15,7 +15,7 @@ experiment_started_schema = {
 }
 
 
-experiment_config_schema = parse({
+experiment_config_schema = parse('''{
     "type": "record", 
     "name": "ExperimentConfig", 
     "fields": [
@@ -46,7 +46,7 @@ experiment_config_schema = parse({
             } 
         }
     ]
-})
+}''')
 
 stabilization_started_schema = parse('''
 {
