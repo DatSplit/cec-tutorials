@@ -114,6 +114,21 @@ def decode_avro_message(message, schema):
     reader = DatumReader(schema)
     return reader.read(decoder)
 
+def decode2(message_bytes):
+    schema_end = message_bytes.find(b'{"type":"record"')
+    schema_bytes = message_bytes[4:schema_end + len(b'{"type":"record"...}')]
+    data_bytes = message_bytes[schema_end + len(b'{"type":"record"...}'):]
+    
+    # Convert schema bytes to Avro schema object
+    schema = avro.schema.parse(schema_bytes.decode('utf-8'))
+
+    # Decode the Avro data
+    bytes_reader = BytesIO(data_bytes)
+    decoder = avro.io.BinaryDecoder(bytes_reader)
+    reader = avro.io.DatumReader(schema)
+    return reader.read(decoder)
+
+
 @click.command()
 @click.argument('topic')
 def consume(topic: str): 
@@ -139,7 +154,7 @@ def consume(topic: str):
         if record_name == 'sensor_temperature_measured':
             deserialized_msg = decode_avro_message(sensor_temperature_measured_schema, msg.value())
         elif record_name == 'experiment_configured':
-            deserialized_msg = decode_avro_message(experiment_config_schema, msg.value())
+            deserialized_msg = decode2(msg.value())
         elif record_name == 'experiment_terminated':
             deserialized_msg = decode_avro_message(experiment_terminated_schema, msg.value())
         elif record_name == 'experiment_started':
