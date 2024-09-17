@@ -56,6 +56,7 @@ if ! [[ -d "$auth" ]]; then
 fi
 for i in {1..3}; do
     docker run \
+    --rm \
         --name experiment-producer-$i \
         -v "$(realpath $auth)":/app/experiment-producer/auth \
         dclandau/cec-experiment-producer \
