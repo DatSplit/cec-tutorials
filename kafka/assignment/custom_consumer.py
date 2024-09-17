@@ -123,6 +123,8 @@ def consume(topic: str):
         print(record_name)
         if record_name == 'sensor_temperature_measured':
             deserialized_msg = avro_deserializer(sensor_temperature_measured_schema, msg.value())
+        elif record_name == 'experiment_configured':
+            deserialized_msg = avro_deserializer(experiment_config_schema, msg.value())
         elif record_name == 'experiment_terminated':
             deserialized_msg = avro_deserializer(experiment_terminated_schema, msg.value())
         elif record_name == 'experiment_started':
