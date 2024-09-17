@@ -5,7 +5,6 @@ import avro.io
 import io
 from confluent_kafka import Consumer
 from avro.schema import parse
-from confluent_kafka import Deserializer
 from io import BytesIO
 from avro.io import DatumReader, BinaryDecoder
 import avro.schema
