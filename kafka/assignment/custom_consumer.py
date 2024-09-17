@@ -21,8 +21,8 @@ c = Consumer({
     'ssl.keystore.location': './auth/kafka.keystore.pkcs12',
     'ssl.keystore.password': 'cc2023',
     'ssl.endpoint.identification.algorithm': 'none',
-
 })
+print("Consumer created successfully")
 
 @click.command()
 @click.argument('topic')
