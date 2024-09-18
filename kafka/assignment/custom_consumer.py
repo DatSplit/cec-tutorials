@@ -114,12 +114,24 @@ c = Consumer({
 print("Consumer created")
 
 def decode_avro_message(message, schema):
+    # Extract the schema
+    schema_start = message.index(b'{"type":"record"')
+    schema_end = message.index(b'}\x00', schema_start) + 1
+    schema_json = message[schema_start:schema_end].decode('utf-8')
+
+    # Parse the schema
+    schema = avro.schema.parse(schema_json)
+
+    # Create a DatumReader
     reader = DatumReader(schema)
-    message_bytes = io.BytesIO(message[5:])
-    decoder = BinaryDecoder(message_bytes)
-    print(decoder)
-    event_dict = reader.read(decoder)
-    return event_dict
+
+    # Create a BinaryDecoder for the actual data
+    data_start = schema_end + 17  # Skip the sync marker
+    decoder = BinaryDecoder(io.BytesIO(message[data_start:]))
+
+    # Read the data
+    deserialized_data = reader.read(decoder)
+    return deserialized_data
 
 
 @click.command()
