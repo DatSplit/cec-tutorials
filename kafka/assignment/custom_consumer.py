@@ -118,7 +118,6 @@ def decode_avro_message(message, schema):
     schema_start = message.index(b'{"type":"record"')
     schema_end = message.index(b'}\x00', schema_start) + 1
     schema_json = message[schema_start:schema_end]
-    print(schema_json)
     # Parse the schema
     schema = avro.schema.parse(schema_json)
 
@@ -128,7 +127,7 @@ def decode_avro_message(message, schema):
     # Create a BinaryDecoder for the actual data
     data_start = schema_end + 17  # Skip the sync marker
     decoder = BinaryDecoder(io.BytesIO(message[data_start:]))
-
+    print(message[data_start:])
     # Read the data
     deserialized_data = reader.read(decoder)
     return deserialized_data
