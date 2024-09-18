@@ -116,6 +116,7 @@ print("Consumer created")
 def decode_avro_message(message, schema):
     reader = DatumReader(schema)
     message_bytes = io.BytesIO(message[5:])
+    print(message_bytes)
     decoder = BinaryDecoder(message_bytes)
     event_dict = reader.read(decoder)
     return event_dict
