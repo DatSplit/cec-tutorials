@@ -114,11 +114,13 @@ c = Consumer({
 print("Consumer created")
 
 def decode_avro_message(message, schema):
-    writer = DataFileWriter(open("msg.avro", "wb"), DatumWriter(), schema)
-    writer.append(message)
-    writer.close()
-    reader = DataFileReader(open("users.avro", "rb"), DatumReader())
-    return print(reader.next())
+    backslash_index = message.find(b'\\')
+    message = message[backslash_index:]
+    print('byte part', message)
+    bytes_reader = BytesIO(message)
+    decoder = BinaryDecoder(bytes_reader)
+    reader = DatumReader(schema)
+    return reader.read(decoder)
 
 
 @click.command()
@@ -143,6 +145,7 @@ def consume(topic: str):
         record_name = msg.headers()[0][1].decode('utf-8')
         print(record_name)
         print(msg.value())
+        print(msg.headers())
         if record_name == 'sensor_temperature_measured':
             deserialized_msg = decode_avro_message(sensor_temperature_measured_schema, msg.value())
         elif record_name == 'experiment_configured':
