@@ -164,8 +164,6 @@ def consume(topic: str):
             print(num_events)
         record_name = msg.headers()[0][1].decode('utf-8')
         print(record_name)
-        print(msg.value())
-        print(msg.headers())
         if record_name == 'sensor_temperature_measured':
             deserialized_msg = decode_avro_message(msg.value(), sensor_temperature_measured_schema)
         elif record_name == 'experiment_configured':
