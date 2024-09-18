@@ -9,6 +9,10 @@ from io import BytesIO
 from avro.io import DatumReader, BinaryDecoder
 import avro.schema
 import fastavro
+import avro.schema
+from avro.datafile import DataFileReader, DataFileWriter
+from avro.io import DatumReader, DatumWriter
+
 experiment_started_schema = {
   "type": "record",
   "name": "experiment_started",
@@ -110,16 +114,8 @@ c = Consumer({
 print("Consumer created")
 
 def decode_avro_message(message, schema):
-    bytes_reader = BytesIO(message)
-    decoder = BinaryDecoder(bytes_reader)
     reader = DatumReader(schema)
-    return reader.read(decoder)
-
-def decode_avro_message2(message_bytes, schema):
-    # Assuming schema is provided separately and message_bytes contains only the Avro-encoded data
-    bytes_reader = BytesIO(message_bytes)
-    reader = fastavro.reader(bytes_reader, reader_options={"reader_schema": schema})
-    return list(reader) 
+    return reader.read(message)
 
 
 @click.command()
@@ -147,7 +143,7 @@ def consume(topic: str):
         if record_name == 'sensor_temperature_measured':
             deserialized_msg = decode_avro_message(sensor_temperature_measured_schema, msg.value())
         elif record_name == 'experiment_configured':
-            deserialized_msg = decode_avro_message2(experiment_config_schema, msg.value())
+            deserialized_msg = decode_avro_message(experiment_config_schema, msg.value())
         elif record_name == 'experiment_terminated':
             deserialized_msg = decode_avro_message(experiment_terminated_schema, msg.value())
         elif record_name == 'experiment_started':
