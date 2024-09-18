@@ -1,6 +1,7 @@
 import signal
 import click 
 import random
+import io
 from confluent_kafka import Consumer
 from fastavro import reader, parse_schema
 
@@ -29,7 +30,6 @@ def decode_avro_message(message):
     avro_file = io.BytesIO(message)
     avro_reader = reader(avro_file)
     for record in avro_reader:
-        print(record)
         return record
 
 
