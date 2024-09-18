@@ -114,13 +114,11 @@ c = Consumer({
 print("Consumer created")
 
 def decode_avro_message(message, schema):
-    backslash_index = message.find(b'\\')
-    message = message[backslash_index:]
-    print('byte part', message)
-    bytes_reader = BytesIO(message)
-    decoder = BinaryDecoder(bytes_reader)
     reader = DatumReader(schema)
-    return reader.read(decoder)
+    message_bytes = io.BytesIO(message)
+    decoder = BinaryDecoder(message_bytes)
+    event_dict = reader.read(decoder)
+    return event_dict
 
 
 @click.command()
