@@ -116,7 +116,7 @@ print("Consumer created")
 def decode_avro_message(message, schema):
     # Extract the schema
     schema_start = message.index(b'{"type":"record"')
-    schema_end = message.index(b'}\x00', schema_start)
+    schema_end = message.index(b'}', schema_start) + 1
     schema_json = message[schema_start:schema_end]
     # Parse the schema
     #schema = avro.schema.parse(schema_json)
