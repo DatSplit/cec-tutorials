@@ -125,7 +125,7 @@ def decode_avro_message(message, schema):
     reader = DatumReader(schema)
 
     # Create a BinaryDecoder for the actual data
-    data_start = schema_end + 17  # Skip the sync marker
+    data_start = schema_end  # Skip the sync marker
     decoder = BinaryDecoder(io.BytesIO(message[data_start:]))
     print(message[data_start:])
     # Read the data
