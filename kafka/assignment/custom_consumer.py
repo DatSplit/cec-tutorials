@@ -145,15 +145,15 @@ def consume(topic: str):
         print(msg.value())
         print(msg.headers())
         if record_name == 'sensor_temperature_measured':
-            deserialized_msg = decode_avro_message(sensor_temperature_measured_schema, msg.value())
+            deserialized_msg = decode_avro_message(msg.value(), sensor_temperature_measured_schema)
         elif record_name == 'experiment_configured':
-            deserialized_msg = decode_avro_message(experiment_config_schema, msg.value())
+            deserialized_msg = decode_avro_message(msg.value(), experiment_config_schema)
         elif record_name == 'experiment_terminated':
-            deserialized_msg = decode_avro_message(experiment_terminated_schema, msg.value())
+            deserialized_msg = decode_avro_message(msg.value(), experiment_terminated_schema)
         elif record_name == 'experiment_started':
-            deserialized_msg = decode_avro_message(experiment_started_schema, msg.value())
+            deserialized_msg = decode_avro_message(msg.value(), experiment_started_schema)
         elif record_name == 'stabilization_started':
-            deserialized_msg = decode_avro_message(stabilization_started_schema, msg.value())
+            deserialized_msg = decode_avro_message(msg.value(), stabilization_started_schema)
         print(deserialized_msg)
 
 consume()
