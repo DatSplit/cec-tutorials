@@ -114,8 +114,11 @@ c = Consumer({
 print("Consumer created")
 
 def decode_avro_message(message, schema):
-    reader = DatumReader(schema)
-    return reader.read(message)
+    writer = DataFileWriter(open("msg.avro", "wb"), DatumWriter(), schema)
+    writer.append(message)
+    writer.close()
+    reader = DataFileReader(open("users.avro", "rb"), DatumReader())
+    return print(reader.next())
 
 
 @click.command()
