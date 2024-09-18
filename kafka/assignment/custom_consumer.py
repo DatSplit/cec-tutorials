@@ -119,13 +119,13 @@ def decode_avro_message(message, schema):
     schema_end = message.index(b'}\x00', schema_start) + 1
     schema_json = message[schema_start:schema_end]
     # Parse the schema
-    schema = avro.schema.parse(schema_json)
+    #schema = avro.schema.parse(schema_json)
 
     # Create a DatumReader
     reader = DatumReader(schema)
 
     # Create a BinaryDecoder for the actual data
-    data_start = schema_end  # Skip the sync marker
+    data_start = schema_end + 4  # Skip the sync marker
     decoder = BinaryDecoder(io.BytesIO(message[data_start:]))
     print(message[data_start:])
     # Read the data
