@@ -16,7 +16,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 c = Consumer({
     'bootstrap.servers': '13.60.146.188:19093,13.60.146.188:29093,13.60.146.188:39093',
     'group.id': f"{random.random()}",
-    'auto.offset.reset': 'earliest',
+    'auto.offset.reset': 'latest',
     'enable.auto.commit': 'true',
     'security.protocol': 'SSL',
     'ssl.ca.location': './auth/ca.crt',
